@@ -46,29 +46,33 @@ class DwbClient:
     def __init__(self,server,profile):
         self.url='http://'+server+'/Profiles/'+urllib.quote(profile)+'/API.query'
         self.cHeaders={"X-Action":"create","X-Language":"Expression"}
+        self.session = requests.Session()
 
     def createRequest(self,query):
-        r=requests.post(self.url,headers=self.cHeaders,data=query,stream=False)
+        r=self.session.post(self.url,headers=self.cHeaders,data=query)
         return r.headers['X-Query-ID'] if r.status_code==200 else None
 
     def resultRequest(self,queryId,completion=0,format='json'):
         self.qHeaders={"X-Action":"result","X-Format":format,"X-Language":"Expression","X-Completion":completion,"X-Query-ID":queryId}
-        r=requests.post(self.url,headers=self.qHeaders,stream=False)
+        r=self.session.post(self.url,headers=self.qHeaders)
         if r.status_code!=200:
             logging.warning('Create Query Failed:'+str(r.status_code)+str(r.headers))
         return r.content if r.status_code==200 else None
  
     def dropRequest(self,queryId):
         self.qHeaders={"X-Action":"drop","X-Query-ID":queryId}
-        r=requests.post(self.url,headers=self.qHeaders,stream=False)
+        r=self.session.post(self.url,headers=self.qHeaders)
         if r.status_code!=200:
             logging.warning('Drop Request Failed:'+str(r.status_code)+str(r.headers))
         return True if r.status_code==200 else False 
         
     def getSchema(self,format='text'):
         self.sHeaders={"X-Action":"get-schema","X-Format":format}
-        r=requests.post(self.url,headers=self.sHeaders,stream=False)
+        r=self.session.post(self.url,headers=self.sHeaders)
         if r.status_code!=200:
             logging.warning('Schema Fetch Failed:'+str(r.status_code)+str(r.headers))
         return r.content if r.status_code==200 else None 
+        
+    def close(self):
+        self.session.close()
         
