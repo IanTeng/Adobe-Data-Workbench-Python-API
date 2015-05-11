@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*- 
 #Copyright (c) 2015 - Ian <dengxw@eship.com.cn> 
 
-'''
+"""
 #python wrapper for adobe data workbench api
     
 #function:
@@ -33,7 +33,7 @@ client=dwb.DwbClient('192.168.16.222:81','Plateno Prd')
 queryId=client.createRequest('eval Visits over Day;')
 #get query result
 result=client.resultRequest(queryId)
-'''
+"""
 
 import requests
 import urllib
